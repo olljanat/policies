@@ -1,0 +1,54 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-searches
+  annotations:
+    policies.kyverno.io/title: Add searches
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      A list of DNS search domains for hostname lookup in the Pod. When specified,
+      the provided list will be merged into the base search domain names generated
+      from the chosen DNS policy.
+spec:
+  background: false
+  rules:
+  - name: add-searches
+    match:
+      resources:
+        kinds:
+        - Pod
+        namespaces:
+        - "dev-*"
+    mutate:
+      patchStrategicMerge:
+        spec:
+          dnsConfig:
+            searches:
+              - dev.local
+  - name: add-searches
+    match:
+      resources:
+        kinds:
+        - Pod
+        namespaces:
+        - "staging-*"
+    mutate:
+      patchStrategicMerge:
+        spec:
+          dnsConfig:
+            searches:
+              - staging.local
+  - name: add-searches
+    match:
+      resources:
+        kinds:
+        - Pod
+        namespaces:
+        - "prod-*"
+    mutate:
+      patchStrategicMerge:
+        spec:
+          dnsConfig:
+            searches:
+              - prod.local
